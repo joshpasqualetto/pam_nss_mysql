@@ -1,0 +1,16 @@
+conf.version = 2;
+shadow.host = inet:<%= @db_host -%>:3306;
+shadow.database = <%= @database -%>;
+shadow.db_user = <%= @db_user -%>;
+shadow.db_password = <%= @db_passwd -%>;
+shadow.table = <%= @users_table -%>;
+shadow.where_clause = <%= @users_table -%>.status = 'A';
+shadow.userid_column = <%= @users_table -%>.user_id;
+shadow.user_column = <%= @users_table -%>.user_name;
+shadow.password_column = <%= @users_table -%>.password;
+shadow.lastchange_column = <%= @users_table -%>.lastchange;
+shadow.min_column = <%= @users_table -%>.min;
+shadow.max_column = <%= @users_table -%>.max;
+shadow.warn_column = <%= @users_table -%>.warn;
+shadow.inact_column = <%= @users_table -%>.inact;
+shadow.expire_column = <%= @users_table -%>.expire;

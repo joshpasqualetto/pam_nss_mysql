@@ -1,0 +1,26 @@
+= DESCRIPTION:
+  Install's pam-mysql & nss-mysql, configures them, and optionally can setup the database.
+= REQUIREMENTS:
+  A MySQL (Or RDS) instance
+  Ubuntu 10.04/10.10
+= ATTRIBUTES:
+  Configures read only access to users, groups and user_groups database
+  Configures read write access to users, groups and user_groups database
+  Configures logging & debug modes for libpam-mysql
+  Configures some config file locations
+= USAGE:
+  Note: automatically creates the DB, Tables etc if given a capable mysql login, then creates least-privileged user accounts that are stored on the system.
+  NOTE: the RW user can do inserts, you may want to remove those directives from the schema file, unless you plan on having nsswitch have mysql being the first instead of compat (unix /etc/passwd) (so it adds users into mysql).
+        We are adding users out of band and use autofs for mounting the users home directory and use key file only authentication, so this is now an issue.
+= NOTES:
+  May remove motd printing if configured inside of session file, Ran into issues where new session authentications would print motd so motd printing turned on in sshd (out of this config)
+
+Please review the common-* template files against what's in your /etc/pam.d/ directory, This was developed on headless ubuntu 10.04 && 10.10 servers, so an X11 based server may have a different configuration. Modifications may apply, and if not done could cause you to be locked out of your system.
+
+
+
+Adding users:
+
+INSERT INTO testing.system_groups VALUES (100,'minty','A','x',1002);
+INSERT INTO testing.system_users VALUES (100,'minty','Minty','/bin/false','','A',1002,1002,'/home/minty', '041406', '', '','', '', '-1');
+INSERT INTO testing.system_user_groups VALUES (100,100);

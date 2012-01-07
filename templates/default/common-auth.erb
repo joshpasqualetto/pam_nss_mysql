@@ -1,0 +1,4 @@
+auth    sufficient        pam_localuser.so
+auth    sufficient        pam_mysql.so config_file=<%= @config_file %>
+auth    requisite         pam_deny.so
+auth    required          pam_permit.so

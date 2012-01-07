@@ -1,0 +1,59 @@
+USE <%= node.pam_nss_mysql.pam.database %>;
+
+<% if node.pam_nss_mysql.debug.sql_logging %>
+CREATE TABLE <%= node.pam_nss_mysql.debug.log_table -%> (
+  msg TEXT, 
+  pid VARCHAR(255), 
+  user VARCHAR(255), 
+  host VARCHAR(255), 
+  rhost VARCHAR(255),
+  time DATETIME
+);
+GRANT INSERT on <%= node.pam_nss_mysql.pam.database -%>.<%= node.pam_nss_mysql.debug.log_table -%> to '<%= @pam_db_user -%>'@'%' identified by '<%= @pam_db_passwd -%>';
+<% end %>
+
+CREATE TABLE <%= node.pam_nss_mysql.pam.users_table -%> (
+  user_id int(11) NOT NULL auto_increment primary key,
+  user_name varchar(50) DEFAULT '' NOT NULL,
+  realname varchar(32) DEFAULT '' NOT NULL,
+  shell varchar(20) DEFAULT '/bin/sh' NOT NULL,
+  password varchar(40) DEFAULT '' NOT NULL,
+  status char(1) DEFAULT 'N' NOT NULL,
+  uid int(11) NOT NULL,
+  gid int(11) DEFAULT '65534' NOT NULL,
+  homedir varchar(32) DEFAULT '/home/username' NOT NULL,
+  min int(11) NOT NULL default '0',
+  max int(11) NOT NULL default '99999',
+  warn int(11) NOT NULL default '0',
+  inact int(11) NOT NULL default '0',
+  expire int(11) NOT NULL default '-1', 
+  lastchange bigint(20) NOT NULL default '1', 
+  created_at datetime,
+  updated_at datetime
+);
+
+CREATE TABLE <%= node.pam_nss_mysql.pam.groups_table -%> (
+  group_id int(11) NOT NULL auto_increment primary key,
+  group_name varchar(30) DEFAULT '' NOT NULL,
+  status        char(1) DEFAULT 'A',
+  group_password varchar(64) DEFAULT 'x' NOT NULL,
+  gid int(11) NOT NULL,
+  created_at datetime,
+  updated_at datetime
+);   
+
+CREATE TABLE <%= node.pam_nss_mysql.pam.user_groups_table -%> (
+  user_id int(11) DEFAULT '0' NOT NULL,
+  group_id int(11) DEFAULT '0' NOT NULL,
+  created_at datetime,
+  updated_at datetime
+);
+
+GRANT SELECT, UPDATE, INSERT on <%= node.pam_nss_mysql.pam.database -%>.<%= node.pam_nss_mysql.pam.users_table -%> to '<%= @pam_db_user -%>'@'%' identified by '<%= @pam_db_passwd -%>';
+GRANT SELECT, UPDATE, INSERT on <%= node.pam_nss_mysql.pam.database -%>.<%= node.pam_nss_mysql.pam.groups_table -%> to '<%= @pam_db_user -%>'@'%' identified by '<%= @pam_db_passwd -%>';
+GRANT SELECT, UPDATE, INSERT on <%= node.pam_nss_mysql.pam.database -%>.<%= node.pam_nss_mysql.pam.user_groups_table -%> to '<%= @pam_db_user -%>'@'%' identified by '<%= @pam_db_passwd -%>';
+
+GRANT SELECT on <%= node.pam_nss_mysql.pam.database -%>.<%= node.pam_nss_mysql.pam.users_table -%> to '<%= @pam_ro_db_user -%>'@'%' identified by '<%= @pam_ro_db_passwd -%>';
+GRANT SELECT on <%= node.pam_nss_mysql.pam.database -%>.<%= node.pam_nss_mysql.pam.groups_table -%> to '<%= @pam_ro_db_user -%>'@'%' identified by '<%= @pam_ro_db_passwd -%>';
+GRANT SELECT on <%= node.pam_nss_mysql.pam.database -%>.<%= node.pam_nss_mysql.pam.user_groups_table -%> to '<%= @pam_ro_db_user -%>'@'%' identified by '<%= @pam_ro_db_passwd -%>';
+FLUSH PRIVILEGES;
